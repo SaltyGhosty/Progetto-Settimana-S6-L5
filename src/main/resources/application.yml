@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: realtime-chat-app
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/chatdb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 'update' è comodo per un progetto universitario (crea/aggiorna le tabelle da solo).
+      # Passare a 'validate' + un vero strumento di migrazione (Flyway/Liquibase) in produzione.
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  thymeleaf:
+    cache: false
+
+  # --- Invio email (usato da EmailService per mandare il report delle statistiche) ---
+  # I valori di esempio qui sotto sono per l'SMTP di Gmail con una "App Password"
+  # (non la password normale del tuo account Gmail). Vedi il README per la configurazione.
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+server:
+  port: 8080
+
+# --- Integrazione IA di OpenRouter (usata da OpenRouterService per "suggerisci una risposta") ---
+openrouter:
+  api-key: ${OPENROUTER_API_KEY:}
+  base-url: https://openrouter.ai/api/v1
+  # Modello gratuito su OpenRouter (nessun costo). Scelto di proposito un modello
+  # "instruct" semplice e non un modello "di ragionamento": i modelli di ragionamento
+  # nel piano gratuito (es. alcune varianti DeepSeek) sono stati osservati far trapelare
+  # frammenti del loro "pensiero" interno dentro il testo della risposta, anche con il
+  # ragionamento disabilitato, corrompendo i suggerimenti mostrati in chat.
+  # Cambialo con un altro modello con suffisso ":free" da
+  # https://openrouter.ai/models?max_price=0 se questo venisse ritirato o rinominato -
+  # preferisci un modello "-instruct" semplice invece di uno "thinking"/"r1" per questo caso d'uso.
+  model: ${OPENROUTER_MODEL:qwen/qwen3.8-27b:free}
+  # Mostrato a OpenRouter per le loro statistiche/limiti di richieste sui modelli gratuiti; opzionale ma consigliato.
+  site-url: http://localhost:8080
+  site-name: Realtime Chat App (Course Project)
+  # Quanti degli ultimi messaggi di una conversazione passare al modello come contesto.
+  history-window: 10
+  timeout-seconds: 20
+
+app:
+  mail:
+    from: ${MAIL_FROM:no-reply@chatapp.local}
+
+logging:
+  level:
+    com.chatapp: DEBUG
+    org.springframework.web.socket: INFO

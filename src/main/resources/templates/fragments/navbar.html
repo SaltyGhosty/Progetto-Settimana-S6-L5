@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/dashboard}">💬 ChatApp</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">Chats</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/statistics}">Statistics</a>
+                </li>
+            </ul>
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn btn-outline-light btn-sm" type="submit">Log out</button>
+            </form>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
